@@ -1,0 +1,1102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hammond Web Design</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#000;
+    --fg:#fff;
+    --card-bg:#0a0a0a;
+    --border: rgba(255,255,255,0.15);
+    --border-hover: rgba(255,255,255,0.4);
+    --muted: rgba(255,255,255,0.55);
+    --cols:8;
+  }
+  *,*::before,*::after{ box-sizing:border-box; margin:0; padding:0; }
+  html{ -webkit-text-size-adjust:100%; }
+  body{
+    background:var(--bg);
+    color:var(--fg);
+    font-family:"Space Grotesk", sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100svh;
+  }
+
+  /* ==============================
+     PIXEL TRANSITION OVERLAY
+     ============================== */
+  #transition{
+    position:fixed; inset:0; z-index:100;
+    display:grid;
+    grid-template-columns:repeat(var(--cols),1fr);
+    grid-auto-rows:1fr;
+    place-content:center;
+  }
+  .px{ width:100%; aspect-ratio:1; background:var(--fg); }
+
+  /* ==============================
+     SHARED NAV — every page uses this.
+     No border-bottom anywhere near the
+     logo; explicitly zeroed out below.
+     ============================== */
+  .site-nav{
+    position:fixed;
+    top:2.25rem;
+    left:clamp(1.5rem,5vw,4rem);
+    right:clamp(1.5rem,5vw,4rem);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    z-index:10;
+  }
+  .nav-links{ display:flex; gap:1.75rem; flex-wrap:wrap; }
+  .nav-link{
+    text-decoration:none;
+    color:var(--muted);
+    font-size:0.82rem;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    padding-bottom:4px;
+    border-bottom:2px solid transparent;
+    transition:color .2s ease, border-color .2s ease;
+  }
+  .nav-link:hover{ color:var(--fg); }
+  .nav-link.active{ color:var(--fg); border-bottom-color:var(--fg); }
+
+  .nav-logo{
+    display:inline-flex;
+    align-items:center;
+    line-height:0;
+    text-decoration:none;
+    border:none;
+    outline:none;
+    box-shadow:none;
+  }
+  .nav-logo:focus-visible{ outline:2px solid var(--fg); outline-offset:4px; }
+  .nav-logo img{
+    width:clamp(110px,15vw,240px);
+    height:auto;
+    display:block;
+    border:none;
+    outline:none;
+    box-shadow:none;
+    -webkit-user-drag:none;
+  }
+
+  /* ==============================
+     PAGE SECTIONS — one shown at a time
+     ============================== */
+  .page{ display:none; }
+  .page.active{ display:block; }
+
+  /* ==================================================
+     HOME
+     ================================================== */
+  #page-home .home-inner{
+    min-height:100svh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:8rem 2rem 4rem;
+  }
+  #page-home h1{
+    font-family:"Pixelify Sans", sans-serif;
+    font-weight:700;
+    font-size:clamp(2.8rem, 9.5vw, 7.5rem);
+    line-height:1.05;
+    letter-spacing:-0.01em;
+    margin-bottom:0.4em;
+  }
+  #page-home .subtitle{
+    font-weight:500;
+    font-size:clamp(1.15rem, 2.8vw, 2rem);
+    letter-spacing:0.04em;
+    opacity:0.8;
+    margin-bottom:2.5rem;
+  }
+  .home-buttons{ display:flex; gap:1rem; flex-wrap:wrap; justify-content:center; }
+
+  /* ==================================================
+     SHARED BUTTON STYLE (Home + Services CTA)
+     ================================================== */
+  .btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    padding:1.05rem 2.4rem;
+    font-family:"Space Grotesk", sans-serif;
+    font-size:clamp(0.9rem, 1.4vw, 1.1rem);
+    font-weight:500;
+    letter-spacing:0.04em;
+    text-decoration:none;
+    border:2px solid var(--fg);
+    cursor:pointer;
+    transition:background .22s ease, color .22s ease;
+    background:transparent;
+    color:var(--fg);
+  }
+  .btn:focus-visible{ outline:2px solid var(--fg); outline-offset:3px; }
+  .btn-primary{ background:var(--fg); color:var(--bg); }
+  .btn-primary:hover{ background:transparent; color:var(--fg); }
+  .btn-secondary:hover{ background:var(--fg); color:var(--bg); }
+
+  @media (max-width:640px){
+    .home-buttons{ flex-direction:column; width:100%; max-width:280px; margin:0 auto; }
+    .btn{ width:100%; }
+  }
+
+  /* ==================================================
+     SERVICES
+     ================================================== */
+  #page-services .services-inner{ padding:8rem clamp(1.5rem,5vw,4rem) 5rem; }
+  .page-header{ text-align:center; margin-bottom:3.5rem; }
+  .page-header h1{
+    font-family:"Pixelify Sans", sans-serif;
+    font-weight:700;
+    font-size:clamp(1.8rem, 5.5vw, 3.8rem);
+    line-height:1.1;
+  }
+
+  .pricing-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem; max-width:1200px; margin:0 auto 5rem; }
+  .tier-card{
+    background:var(--card-bg); border:1px solid var(--border);
+    padding:2.25rem 2rem; display:flex; flex-direction:column;
+    transition:border-color .25s ease;
+  }
+  .tier-card:hover{ border-color:var(--border-hover); }
+  .tier-name{ font-family:"Pixelify Sans", sans-serif; font-weight:600; font-size:clamp(1.1rem,1.8vw,1.4rem); margin-bottom:1rem; letter-spacing:0.02em; }
+  .tier-price{ font-weight:700; font-size:clamp(2.2rem,4vw,3.2rem); line-height:1; margin-bottom:0.3rem; }
+  .tier-price-note{ font-size:0.8rem; color:var(--muted); margin-bottom:1.8rem; letter-spacing:0.03em; }
+  .tier-features{ list-style:none; flex:1; margin-bottom:2rem; }
+  .tier-features li{ position:relative; padding-left:1.4rem; font-size:0.92rem; line-height:1.5; color:rgba(255,255,255,0.82); margin-bottom:0.7rem; }
+  .tier-features li::before{ content:"✓"; position:absolute; left:0; color:var(--fg); font-weight:700; }
+  .tier-features .includes{ padding-left:0; font-style:italic; color:var(--muted); margin-bottom:1rem; font-size:0.85rem; }
+  .tier-features .includes::before{ display:none; }
+  .tier-cta{
+    display:block; text-align:center; padding:0.9rem 1.5rem;
+    font-size:0.95rem; font-weight:500; letter-spacing:0.04em;
+    text-decoration:none; border:2px solid var(--fg); background:var(--fg); color:var(--bg);
+    cursor:pointer; transition:background .2s ease, color .2s ease; margin-top:auto;
+  }
+  .tier-cta:hover{ background:transparent; color:var(--fg); }
+  .tier-cta:focus-visible{ outline:2px solid var(--fg); outline-offset:3px; }
+
+  .section-divider{ width:100%; max-width:1200px; margin:0 auto 3.5rem; border:none; border-top:1px solid var(--border); }
+
+  .subscriptions-header{ text-align:center; margin-bottom:1rem; }
+  .subscriptions-header h2{ font-family:"Pixelify Sans", sans-serif; font-weight:700; font-size:clamp(1.5rem,4vw,2.8rem); margin-bottom:0.6rem; }
+  .subscriptions-header p{ font-size:0.95rem; color:var(--muted); max-width:44ch; margin:0 auto 2.5rem; line-height:1.55; }
+  .subscriptions-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem; max-width:1200px; margin:0 auto; }
+  .sub-card{ border:1px solid var(--border); padding:2rem; display:flex; flex-direction:column; transition:border-color .25s ease; }
+  .sub-card:hover{ border-color:var(--border-hover); }
+  .sub-name{ font-family:"Pixelify Sans", sans-serif; font-weight:600; font-size:1.2rem; margin-bottom:0.2rem; }
+  .sub-pairing{ font-size:0.78rem; color:var(--muted); letter-spacing:0.04em; margin-bottom:1rem; }
+  .sub-price{ font-weight:700; font-size:2rem; line-height:1; margin-bottom:1.5rem; }
+  .sub-price span{ font-size:0.9rem; font-weight:400; color:var(--muted); }
+  .sub-features{ list-style:none; flex:1; }
+  .sub-features li{ position:relative; padding-left:1.4rem; font-size:0.88rem; line-height:1.5; color:rgba(255,255,255,0.78); margin-bottom:0.6rem; }
+  .sub-features li::before{ content:"✓"; position:absolute; left:0; color:var(--fg); font-weight:700; }
+  .sub-features .includes{ padding-left:0; font-style:italic; color:var(--muted); margin-bottom:0.8rem; font-size:0.82rem; }
+  .sub-features .includes::before{ display:none; }
+
+  .page-footer{ text-align:center; margin-top:5rem; padding-top:2rem; border-top:1px solid var(--border); font-size:0.78rem; color:var(--muted); letter-spacing:0.03em; }
+
+  @media (max-width:960px){ .pricing-grid, .subscriptions-grid{ grid-template-columns:1fr; max-width:520px; } }
+  @media (max-width:640px){ .tier-card, .sub-card{ padding:1.75rem 1.5rem; } }
+
+  /* ==================================================
+     PORTFOLIO
+     ================================================== */
+  #page-portfolio .portfolio-inner{
+    min-height:100svh;
+    display:flex; flex-direction:column; justify-content:center; gap:2.5rem;
+    padding:8rem 0 4rem;
+  }
+  .portfolio-title{
+    font-family:"Pixelify Sans", sans-serif; font-weight:700;
+    font-size:clamp(1.8rem,5.5vw,3.8rem); line-height:1.1;
+    text-align:center; width:100%; padding:0 2rem;
+  }
+  .pan-wrap{ width:100vw; overflow:hidden; }
+  .pan-track{ display:flex; gap:2rem; width:max-content; animation:pan-scroll 46s linear infinite; will-change:transform; }
+  .pan-wrap:hover .pan-track{ animation-play-state:paused; }
+  @keyframes pan-scroll{ from{ transform:translate3d(0,0,0); } to{ transform:translate3d(-50%,0,0); } }
+  .pan-item{ flex:0 0 auto; width:min(78vw,760px); position:relative; cursor:default; }
+  .preview-frame{ position:relative; border:1px solid rgba(255,255,255,0.12); overflow:hidden; transition:border-color .25s ease; }
+  .pan-item:hover .preview-frame{ border-color:rgba(255,255,255,0.35); }
+  .preview-viewport{ width:100%; aspect-ratio:16/10; overflow:hidden; position:relative; background:#0a0a0a; }
+  .preview-viewport img{ width:100%; height:100%; object-fit:cover; display:block; pointer-events:none; }
+  .preview-hover{
+    position:absolute; inset:0; background:rgba(0,0,0,0.72);
+    display:flex; align-items:center; justify-content:center;
+    opacity:0; transition:opacity .3s ease; pointer-events:none; z-index:2;
+  }
+  .pan-item:hover .preview-hover{ opacity:1; }
+  .preview-hover span{ font-family:"Pixelify Sans", sans-serif; font-size:clamp(1.3rem,2.8vw,2.2rem); font-weight:700; text-align:center; padding:0 1rem; }
+  .pixel-particles{ position:absolute; inset:-24px; z-index:3; pointer-events:none; }
+  .scatter-px{ position:absolute; background:var(--fg); animation:pixel-drift ease-in-out infinite; pointer-events:none; }
+  @keyframes pixel-drift{
+    0%,100%{ transform:translate(0,0); opacity:var(--p-lo,0.12); }
+    50%{ transform:translate(var(--p-dx,0px), var(--p-dy,0px)); opacity:var(--p-hi,0.55); }
+  }
+  @media (max-width:700px){ .pan-item{ width:88vw; } }
+
+  /* ==================================================
+     CONTACT
+     ================================================== */
+  #page-contact .contact-inner{ padding:8rem clamp(1.5rem,5vw,4rem) 5rem; }
+  .contact-layout{ display:grid; grid-template-columns:0.85fr 1.15fr; gap:2.4rem; align-items:start; max-width:1200px; margin:0 auto; }
+  @media (max-width:860px){ .contact-layout{ grid-template-columns:1fr; } }
+
+  .info-card{ background:var(--card-bg); border:1px solid var(--border); padding:1.8rem; }
+  .ci{ display:flex; gap:1rem; padding:1rem 0; border-bottom:1px solid var(--border); }
+  .ci:last-of-type{ border-bottom:none; padding-bottom:0.4rem; }
+  .ci-key{ font-size:0.7rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); margin-bottom:0.3rem; }
+  .ci-val{ font-family:"Space Grotesk", sans-serif; font-weight:600; font-size:1.05rem; letter-spacing:0.01em; }
+  .ci-val a{ color:var(--fg); text-decoration:none; border-bottom:1px solid var(--border); }
+  .ci-val a:hover{ border-bottom-color:var(--fg); }
+  .ci-sub{ font-size:0.82rem; color:var(--muted); margin-top:0.15rem; }
+
+  .note-box{ margin-top:1.4rem; background:rgba(255,255,255,0.04); border:1px solid var(--border); padding:1rem 1.1rem; }
+  .note-box b{ display:block; font-family:"Space Grotesk", sans-serif; font-size:0.9rem; margin-bottom:0.3rem; }
+  .note-box p{ font-size:0.83rem; color:var(--muted); line-height:1.55; }
+
+  .form-card{ background:var(--card-bg); border:1px solid var(--border); padding:1.8rem; }
+  .form-card h2{ font-family:"Pixelify Sans", sans-serif; font-size:1.3rem; margin-bottom:0.3rem; }
+  .form-card .form-sub{ font-size:0.88rem; margin-bottom:1.4rem; color:var(--muted); }
+  .fg{ margin-bottom:0.9rem; }
+  .fg label{ display:block; font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:var(--muted); margin-bottom:0.35rem; }
+  .fg label .opt{ text-transform:none; letter-spacing:0; font-weight:500; opacity:0.8; }
+  .fg input, .fg select, .fg textarea{
+    width:100%; background:#000; border:1px solid var(--border); color:var(--fg);
+    padding:0.65rem 0.8rem; font-family:inherit; font-size:0.95rem;
+    transition:border-color .18s ease;
+  }
+  .fg textarea{ min-height:110px; resize:vertical; }
+  .fg input:focus, .fg select:focus, .fg textarea:focus{ outline:none; border-color:var(--fg); }
+  .form-row{ display:grid; grid-template-columns:1fr 1fr; gap:0.8rem; }
+  @media (max-width:520px){ .form-row{ grid-template-columns:1fr; } }
+  .err{ color:#ff8a80; font-size:0.78rem; display:none; margin-top:0.3rem; }
+  .err.show{ display:block; }
+  .form-status{ padding:0.6rem 0.85rem; border:1px solid var(--border); margin-top:0.8rem; font-size:0.86rem; display:none; }
+  .form-status.show{ display:block; }
+  .form-status.ok{ border-color:var(--fg); }
+  .form-status.bad{ border-color:#ff8a80; color:#ff8a80; }
+  .form-submit{
+    width:100%; background:var(--fg); color:var(--bg); border:2px solid var(--fg);
+    padding:0.9rem 1rem; font-weight:600; font-size:0.94rem; cursor:pointer;
+    transition:background .2s ease, color .2s ease, opacity .2s ease;
+  }
+  .form-submit:hover:not(:disabled){ background:transparent; color:var(--fg); }
+  .form-submit:disabled{ opacity:0.5; cursor:default; }
+  .form-foot{ text-align:center; font-size:0.8rem; color:var(--muted); margin-top:0.9rem; }
+  .hp{ position:absolute !important; left:-9999px !important; width:1px; height:1px; opacity:0; }
+  .counter{ text-align:right; font-size:0.73rem; color:var(--muted); }
+
+  /* ==================================================
+     RESPONSIVE (nav + generic)
+     ================================================== */
+  @media (max-width:640px){
+    .site-nav{ top:1.5rem; left:1.5rem; right:1.5rem; }
+    .nav-links{ gap:1rem; }
+    .nav-link{ font-size:0.72rem; }
+    .nav-logo img{ width:110px; }
+    #page-home .home-inner,
+    #page-services .services-inner,
+    #page-portfolio .portfolio-inner,
+    #page-contact .contact-inner{ padding-top:7rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .pan-track{ animation:none; }
+    .scatter-px{ animation:none !important; opacity:0.25 !important; }
+    .preview-hover, .preview-frame, .btn, .tier-card, .sub-card, .nav-link, .form-submit{ transition:none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Pixel transition overlay -->
+<div id="transition"></div>
+
+<!-- Shared navigation — every internal link routes through switchPage(),
+     so there's no filename to accidentally land on the wrong place. -->
+<nav class="site-nav">
+  <div class="nav-links">
+    <a href="#" class="nav-link active" data-page="home" onclick="switchPage('home'); return false;">Home</a>
+    <a href="#" class="nav-link" data-page="services" onclick="switchPage('services'); return false;">Services</a>
+    <a href="#" class="nav-link" data-page="portfolio" onclick="switchPage('portfolio'); return false;">Portfolio</a>
+    <a href="#" class="nav-link" data-page="contact" onclick="switchPage('contact'); return false;">Contact</a>
+  </div>
+  <a href="#" class="nav-logo" onclick="switchPage('home'); return false;">
+    <img src="images/hammondwebdesigndark.png" alt="Hammond Web Design" draggable="false">
+  </a>
+</nav>
+
+<!-- ==================================================
+     HOME
+     ================================================== -->
+<div class="page active" id="page-home">
+  <div class="home-inner">
+    <h1>Websites That Work</h1>
+    <p class="subtitle">Starting at $50</p>
+    <div class="home-buttons">
+      <a href="#" class="btn btn-primary" onclick="switchPage('services'); return false;">See Pricing</a>
+      <a href="#" class="btn btn-secondary" onclick="switchPage('portfolio'); return false;">View Our Work</a>
+    </div>
+  </div>
+</div>
+
+<!-- ==================================================
+     SERVICES
+     ================================================== -->
+<div class="page" id="page-services">
+  <div class="services-inner">
+
+    <div class="page-header">
+      <h1>Affordable Websites<br>for Local Businesses</h1>
+    </div>
+
+    <div class="pricing-grid">
+
+      <div class="tier-card">
+        <div class="tier-name">Starter</div>
+        <div class="tier-price">$50</div>
+        <div class="tier-price-note">one-time payment</div>
+        <ul class="tier-features">
+          <li>Up to 5 pages designed for your business</li>
+          <li>Looks great on phones, tablets, and computers</li>
+          <li>Contact form — messages go straight to your email</li>
+          <li>Built to show up in Google searches</li>
+          <li>Google Maps on your site so customers can find you</li>
+          <li>We help you get your site live and online</li>
+          <li>Ready in 2–3 business days</li>
+          <li>1 round of changes after you review it</li>
+        </ul>
+        <a href="#" class="tier-cta" onclick="switchPage('contact', 'Starter — $50'); return false;">Get Started</a>
+      </div>
+
+      <div class="tier-card">
+        <div class="tier-name">Professional</div>
+        <div class="tier-price">$500</div>
+        <div class="tier-price-note">one-time payment</div>
+        <ul class="tier-features">
+          <li class="includes">Everything in Starter, plus:</li>
+          <li>Custom database design &amp; integration</li>
+          <li>User registration &amp; login</li>
+          <li>Payments via Stripe or PayPal</li>
+          <li>Product catalog &amp; checkout</li>
+          <li>Booking / reservation system</li>
+          <li>Admin dashboard for orders and users</li>
+          <li>Email notification system</li>
+          <li>Delivered in 1–2 weeks</li>
+          <li>3 rounds of revisions</li>
+        </ul>
+        <a href="#" class="tier-cta" onclick="switchPage('contact', 'Professional — $500'); return false;">Get Started</a>
+      </div>
+
+      <div class="tier-card">
+        <div class="tier-name">AI Agents &amp; Virtual Assistants</div>
+        <div class="tier-price">$2,000</div>
+        <div class="tier-price-note">one-time payment</div>
+        <ul class="tier-features">
+          <li class="includes">Everything in Professional, plus:</li>
+          <li>Custom AI chatbot trained on your business</li>
+          <li>Virtual assistant for customer support</li>
+          <li>AI product or content recommendations</li>
+          <li>Intelligent search across your site</li>
+          <li>Automated workflow triggers</li>
+          <li>OpenAI / custom model integration</li>
+          <li>API connections to third-party tools</li>
+          <li>Full documentation &amp; training</li>
+          <li>Delivered in 2–4 weeks</li>
+          <li>Unlimited revisions during the build</li>
+        </ul>
+        <a href="#" class="tier-cta" onclick="switchPage('contact', 'AI Agents &amp; Virtual Assistants — $2,000'); return false;">Get Started</a>
+      </div>
+
+    </div>
+
+    <hr class="section-divider">
+
+    <div class="subscriptions-header">
+      <h2>Monthly Support Plans</h2>
+      <p>Once your site is live, pick the plan that matches your tier to keep everything running and up to date.</p>
+    </div>
+
+    <div class="subscriptions-grid">
+
+      <div class="sub-card">
+        <div class="sub-name">Care</div>
+        <div class="sub-pairing">For Starter websites</div>
+        <div class="sub-price">$15<span> /mo</span></div>
+        <ul class="sub-features">
+          <li>Website hosting — we handle the technical stuff</li>
+          <li>SSL security certificate included</li>
+          <li>Monthly site health check</li>
+        </ul>
+      </div>
+
+      <div class="sub-card">
+        <div class="sub-name">Care+</div>
+        <div class="sub-pairing">For Professional websites</div>
+        <div class="sub-price">$50<span> /mo</span></div>
+        <ul class="sub-features">
+          <li class="includes">Everything in Care, plus:</li>
+          <li>Email &amp; text support</li>
+          <li>2 hours of edits per month</li>
+          <li>Weekly backups</li>
+        </ul>
+      </div>
+
+      <div class="sub-card">
+        <div class="sub-name">Managed</div>
+        <div class="sub-pairing">For AI &amp; Automation websites</div>
+        <div class="sub-price">$200<span> /mo</span></div>
+        <ul class="sub-features">
+          <li class="includes">Everything in Care+, plus:</li>
+          <li>Up to 6 hours of development work per month</li>
+          <li>Daily backups</li>
+          <li>Priority same-day response</li>
+          <li>Monthly analytics reports</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="page-footer">© 2026 Hammond Web Design</div>
+
+  </div>
+</div>
+
+<!-- ==================================================
+     PORTFOLIO
+     ================================================== -->
+<div class="page" id="page-portfolio">
+  <div class="portfolio-inner">
+
+    <h1 class="portfolio-title">Take a Look at Our Work</h1>
+
+    <div class="pan-wrap">
+      <div class="pan-track">
+
+        <div class="pan-item" data-name="PrintCraft">
+          <div class="pixel-particles"></div>
+          <div class="preview-frame">
+            <div class="preview-viewport"><img src="images/printcraft.png" alt="PrintCraft preview"></div>
+            <div class="preview-hover"><span>PrintCraft</span></div>
+          </div>
+        </div>
+
+        <div class="pan-item" data-name="Wall Studio">
+          <div class="pixel-particles"></div>
+          <div class="preview-frame">
+            <div class="preview-viewport"><img src="images/wall-studio.png" alt="Wall Studio preview"></div>
+            <div class="preview-hover"><span>Wall Studio</span></div>
+          </div>
+        </div>
+
+        <div class="pan-item" data-name="SidingPro">
+          <div class="pixel-particles"></div>
+          <div class="preview-frame">
+            <div class="preview-viewport"><img src="images/sidingpro.png" alt="SidingPro preview"></div>
+            <div class="preview-hover"><span>SidingPro</span></div>
+          </div>
+        </div>
+
+        <div class="pan-item" data-name="Basil &amp; Butter">
+          <div class="pixel-particles"></div>
+          <div class="preview-frame">
+            <div class="preview-viewport"><img src="images/basil-and-butter.png" alt="Basil &amp; Butter preview"></div>
+            <div class="preview-hover"><span>Basil &amp; Butter</span></div>
+          </div>
+        </div>
+
+        <div class="pan-item" data-name="Canvas Collective">
+          <div class="pixel-particles"></div>
+          <div class="preview-frame">
+            <div class="preview-viewport"><img src="images/canvas-collective.png" alt="Canvas Collective preview"></div>
+            <div class="preview-hover"><span>Canvas Collective</span></div>
+          </div>
+        </div>
+
+        <div class="pan-item" data-name="Fernstone Landscapes">
+          <div class="pixel-particles"></div>
+          <div class="preview-frame">
+            <div class="preview-viewport"><img src="images/fernstone-landscapes.png" alt="Fernstone Landscapes preview"></div>
+            <div class="preview-hover"><span>Fernstone Landscapes</span></div>
+          </div>
+        </div>
+
+        <!-- duplicate set, no loading="lazy" — that's what caused the white cards -->
+        <div class="pan-item" data-name="PrintCraft" aria-hidden="true">
+          <div class="pixel-particles"></div>
+          <div class="preview-frame">
+            <div class="preview-viewport"><img src="images/printcraft.png" alt=""></div>
+            <div class="preview-hover"><span>PrintCraft</span></div>
+          </div>
+        </div>
+        <div class="pan-item" data-name="Wall Studio" aria-hidden="true">
+          <div class="pixel-particles"></div>
+          <div class="preview-frame">
+            <div class="preview-viewport"><img src="images/wall-studio.png" alt=""></div>
+            <div class="preview-hover"><span>Wall Studio</span></div>
+          </div>
+        </div>
+        <div class="pan-item" data-name="SidingPro" aria-hidden="true">
+          <div class="pixel-particles"></div>
+          <div class="preview-frame">
+            <div class="preview-viewport"><img src="images/sidingpro.png" alt=""></div>
+            <div class="preview-hover"><span>SidingPro</span></div>
+          </div>
+        </div>
+        <div class="pan-item" data-name="Basil &amp; Butter" aria-hidden="true">
+          <div class="pixel-particles"></div>
+          <div class="preview-frame">
+            <div class="preview-viewport"><img src="images/basil-and-butter.png" alt=""></div>
+            <div class="preview-hover"><span>Basil &amp; Butter</span></div>
+          </div>
+        </div>
+        <div class="pan-item" data-name="Canvas Collective" aria-hidden="true">
+          <div class="pixel-particles"></div>
+          <div class="preview-frame">
+            <div class="preview-viewport"><img src="images/canvas-collective.png" alt=""></div>
+            <div class="preview-hover"><span>Canvas Collective</span></div>
+          </div>
+        </div>
+        <div class="pan-item" data-name="Fernstone Landscapes" aria-hidden="true">
+          <div class="pixel-particles"></div>
+          <div class="preview-frame">
+            <div class="preview-viewport"><img src="images/fernstone-landscapes.png" alt=""></div>
+            <div class="preview-hover"><span>Fernstone Landscapes</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="page-footer">© 2026 Hammond Web Design</div>
+
+  </div>
+</div>
+
+<!-- ==================================================
+     CONTACT
+     ================================================== -->
+<div class="page" id="page-contact">
+  <div class="contact-inner">
+
+    <div class="page-header">
+      <h1>Let's Build Something</h1>
+    </div>
+
+    <div class="contact-layout">
+
+      <div class="info-card">
+        <div class="ci">
+          <div>
+            <div class="ci-key">Designer</div>
+            <div class="ci-val">Asuaka Rafiq</div>
+            <div class="ci-sub">Owner &amp; web designer</div>
+          </div>
+        </div>
+        <div class="ci">
+          <div>
+            <div class="ci-key">Phone / text</div>
+            <div class="ci-val"><a href="tel:+18124987657">(812) 498-7657</a></div>
+            <div class="ci-sub">Fastest way to reach us</div>
+          </div>
+        </div>
+        <div class="ci">
+          <div>
+            <div class="ci-key">Email</div>
+            <div class="ci-val"><a href="mailto:hammondwebsites@gmail.com">hammondwebsites@gmail.com</a></div>
+            <div class="ci-sub">Replies within a few hours</div>
+          </div>
+        </div>
+        <div class="ci">
+          <div>
+            <div class="ci-key">Location</div>
+            <div class="ci-val">Hammond, Indiana</div>
+            <div class="ci-sub">Serving Hammond, NW Indiana &amp; beyond</div>
+          </div>
+        </div>
+        <div class="note-box">
+          <b>Quick response</b>
+          <p>Text or call (812) 498-7657 for a same-day answer. Email and the form here are best for detailed project descriptions — typically answered within 2–3 hours during business hours.</p>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <h2>Start your project</h2>
+        <p class="form-sub">Tell us what you need and you'll get a plan and a price back.</p>
+
+        <form id="contactForm" novalidate autocomplete="on">
+          <div class="form-row">
+            <div class="fg">
+              <label for="firstName">First name</label>
+              <input type="text" id="firstName" name="firstName" maxlength="60" autocomplete="given-name" placeholder="John" required>
+              <p class="err" id="err-firstName"></p>
+            </div>
+            <div class="fg">
+              <label for="lastName">Last name</label>
+              <input type="text" id="lastName" name="lastName" maxlength="60" autocomplete="family-name" placeholder="Smith" required>
+              <p class="err" id="err-lastName"></p>
+            </div>
+          </div>
+
+          <div class="fg">
+            <label for="email">Email address</label>
+            <input type="email" id="email" name="email" maxlength="254" autocomplete="email" inputmode="email" spellcheck="false" placeholder="you@example.com" required>
+            <p class="err" id="err-email"></p>
+          </div>
+
+          <div class="fg">
+            <label for="phone">Phone number <span class="opt">(optional)</span></label>
+            <input type="tel" id="phone" name="phone" maxlength="25" autocomplete="tel" inputmode="tel" placeholder="(812) 555-0134">
+            <p class="err" id="err-phone"></p>
+          </div>
+
+          <div class="fg">
+            <label for="tier">Which tier are you after?</label>
+            <select id="tier" name="tier">
+              <option value="Not sure yet">Not sure yet — help me decide</option>
+              <option value="Starter — $50">Starter — basic website, $50</option>
+              <option value="Professional — $500">Professional — database &amp; payments, $500</option>
+              <option value="AI Agents &amp; Virtual Assistants — $2,000">AI Agents &amp; Virtual Assistants — $2,000</option>
+            </select>
+            <p class="err" id="err-tier"></p>
+          </div>
+
+          <div class="fg">
+            <label for="care">Monthly care plan</label>
+            <select id="care" name="care">
+              <option value="Undecided">Undecided</option>
+              <option value="Care — $15/mo">Care — $15/month</option>
+              <option value="Care+ — $50/mo">Care+ — $50/month</option>
+              <option value="Managed — $200/mo">Managed — $200/month</option>
+              <option value="No care plan">No care plan, thanks</option>
+            </select>
+            <p class="err" id="err-care"></p>
+          </div>
+
+          <div class="fg">
+            <label for="business">Type of business <span class="opt">(optional)</span></label>
+            <input type="text" id="business" name="business" maxlength="100" placeholder="Restaurant, barbershop, rental shop, portfolio…">
+            <p class="err" id="err-business"></p>
+          </div>
+
+          <div class="fg">
+            <label for="message">Tell us about your project</label>
+            <textarea id="message" name="message" maxlength="2000" placeholder="What does your business do? What should the website accomplish? Any features, pages, or examples you like…" required></textarea>
+            <div class="counter"><span id="charCount">0</span> / 2000</div>
+            <p class="err" id="err-message"></p>
+          </div>
+
+          <!-- Spam trap: hidden from people, tempting to bots. Never fill this in. -->
+          <div class="hp" aria-hidden="true">
+            <label for="companyWebsite">Leave this field empty</label>
+            <input type="text" id="companyWebsite" name="companyWebsite" tabindex="-1" autocomplete="off">
+          </div>
+
+          <button type="submit" class="form-submit" id="submitBtn">Send message</button>
+          <p class="form-status" id="formStatus" role="status" aria-live="polite"></p>
+          <p class="form-foot">Prefer to talk? Call or text <strong>(812) 498-7657</strong>.</p>
+        </form>
+      </div>
+
+    </div>
+
+    <div class="page-footer">© 2026 Hammond Web Design</div>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script>
+  /* ==================================================
+     PIXEL GRID — build/rebuild to fill the viewport
+     ================================================== */
+  const overlay = document.getElementById("transition");
+  const cols = 8;
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function buildGrid() {
+    const cellSize = window.innerWidth / cols;
+    const rows = Math.ceil(window.innerHeight / cellSize) + 2;
+    overlay.innerHTML = "";
+    const frag = document.createDocumentFragment();
+    for (let i = 0; i < cols * rows; i++) {
+      const d = document.createElement("div");
+      d.className = "px";
+      frag.appendChild(d);
+    }
+    overlay.appendChild(frag);
+  }
+  buildGrid();
+
+  /* ==================================================
+     INITIAL REVEAL — grid dissolves away on first load
+     ================================================== */
+  function revealOnLoad() {
+    if (reduceMotion) {
+      gsap.set(overlay, { display: "none" });
+      return;
+    }
+    gsap.timeline({
+      defaults: { ease: "linear" },
+      onComplete: () => gsap.set(overlay, { display: "none" })
+    }).to(".px", {
+      opacity: 0,
+      duration: 0.1,
+      stagger: { amount: 0.75, from: "random" }
+    }, 0.15);
+  }
+  window.addEventListener("load", revealOnLoad);
+
+  /* ==================================================
+     SECTION SWITCHING — this is the site's real
+     navigation. Every internal link calls switchPage(),
+     never a filename, so there's nothing to route to
+     but the correct section.
+
+     Fills the grid in, swaps the active .page while
+     fully covered, then dissolves the grid away again.
+     Runs on every switch, per your call.
+     ================================================== */
+  let currentPage = "home";
+  let switching = false;
+
+  function switchPage(id, prefillTier) {
+    if (switching || id === currentPage) {
+      if (prefillTier) setTierValue(prefillTier);
+      return;
+    }
+    switching = true;
+
+    const doSwap = () => {
+      document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+      document.getElementById("page-" + id).classList.add("active");
+      document.querySelectorAll(".nav-link").forEach(a => a.classList.remove("active"));
+      const navEl = document.querySelector('.nav-link[data-page="' + id + '"]');
+      if (navEl) navEl.classList.add("active");
+      window.scrollTo(0, 0);
+      currentPage = id;
+      if (prefillTier) setTierValue(prefillTier);
+    };
+
+    if (reduceMotion) {
+      doSwap();
+      switching = false;
+      return;
+    }
+
+    buildGrid();
+    gsap.set(overlay, { display: "grid" });
+
+    // Fill in
+    gsap.fromTo(".px",
+      { autoAlpha: 0 },
+      {
+        autoAlpha: 1,
+        duration: 0.001,
+        ease: "linear",
+        stagger: { amount: 0.5, from: "random" },
+        onComplete: () => {
+          doSwap();
+          // Dissolve away
+          gsap.timeline({
+            defaults: { ease: "linear" },
+            onComplete: () => {
+              gsap.set(overlay, { display: "none" });
+              switching = false;
+            }
+          }).to(".px", {
+            opacity: 0,
+            duration: 0.1,
+            stagger: { amount: 0.75, from: "random" }
+          }, 0.1);
+        }
+      }
+    );
+  }
+
+  function setTierValue(value) {
+    const select = document.getElementById("tier");
+    if (select) select.value = value;
+  }
+
+  let resizeTimer;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(buildGrid, 200);
+  });
+
+  /* ==================================================
+     PORTFOLIO — pixel scatter particles
+     ================================================== */
+  function createPixelScatter() {
+    const items = document.querySelectorAll(".pan-item");
+    const sizes = [3, 4, 5, 6, 8];
+
+    items.forEach(item => {
+      const container = item.querySelector(".pixel-particles");
+      if (!container) return;
+      const count = 14 + Math.floor(Math.random() * 6);
+
+      for (let i = 0; i < count; i++) {
+        const px = document.createElement("div");
+        px.className = "scatter-px";
+
+        const size = sizes[Math.floor(Math.random() * sizes.length)];
+        px.style.width = size + "px";
+        px.style.height = size + "px";
+
+        const edge = Math.floor(Math.random() * 4);
+        const along = Math.random() * 100;
+        const spread = -2 + Math.random() * 22;
+
+        switch (edge) {
+          case 0: px.style.left = along + "%"; px.style.top = (24 - spread) + "px"; break;
+          case 1: px.style.right = (24 - spread) + "px"; px.style.top = along + "%"; break;
+          case 2: px.style.left = along + "%"; px.style.bottom = (24 - spread) + "px"; break;
+          case 3: px.style.left = (24 - spread) + "px"; px.style.top = along + "%"; break;
+        }
+
+        const duration = 2.5 + Math.random() * 4;
+        const delay = Math.random() * 4;
+        const dx = -7 + Math.random() * 14;
+        const dy = -7 + Math.random() * 14;
+        const loOpacity = 0.06 + Math.random() * 0.12;
+        const hiOpacity = 0.35 + Math.random() * 0.4;
+
+        px.style.setProperty("--p-dx", dx + "px");
+        px.style.setProperty("--p-dy", dy + "px");
+        px.style.setProperty("--p-lo", loOpacity);
+        px.style.setProperty("--p-hi", hiOpacity);
+        px.style.animationDuration = duration + "s";
+        px.style.animationDelay = delay + "s";
+
+        container.appendChild(px);
+      }
+    });
+  }
+  createPixelScatter();
+
+  /* ==================================================
+     CONTACT FORM
+     ================================================== */
+  (function() {
+    const FORM_ENDPOINT = "https://api.web3forms.com/submit";
+    const WEB3FORMS_KEY = "d78919be-bcf8-495d-9c99-fd9d81e1a5fc";
+    const OWNER_EMAIL = "hammondwebsites@gmail.com";
+
+    const form = document.getElementById("contactForm");
+    const statusEl = document.getElementById("formStatus");
+    const submitBtn = document.getElementById("submitBtn");
+    const loadedAt = Date.now();
+    let lastSubmitAt = 0;
+    let attempted = false;
+
+    function clean(v, allowNewlines) {
+      let s = String(v == null ? "" : v);
+      s = s.replace(allowNewlines ? /[\u0000-\u0009\u000B\u000C\u000E-\u001F\u007F]/g : /[\u0000-\u001F\u007F]/g, "");
+      s = s.replace(/[\u200B-\u200D\uFEFF]/g, "");
+      return s.replace(/[ \t]{3,}/g, "  ").trim();
+    }
+    const INJECTION = /(\r|\n|%0a|%0d|\bbcc\s*:|\bcc\s*:|content-type\s*:|mime-version\s*:)/i;
+    const EMAIL_RE = /^[A-Za-z0-9!#$%&'*+/=?^_`{|}~.-]+@[A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?(\.[A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?)+$/;
+
+    function validEmail(raw) {
+      const v = raw.trim();
+      if (v.length > 254) return "Email too long.";
+      if (INJECTION.test(v)) return "Invalid characters.";
+      if (!EMAIL_RE.test(v)) return "Enter a complete email address.";
+      const [local, domain] = v.split("@");
+      if (local.length > 64) return "Local part too long.";
+      if (v.includes("..") || local.startsWith(".") || local.endsWith(".")) return "Remove double or trailing dot.";
+      if (!/\.[A-Za-z]{2,24}$/.test(domain)) return "Domain needs a valid ending.";
+      return "";
+    }
+    function validName(v, label) {
+      const s = clean(v, false);
+      if (!s) return label + " is required.";
+      if (s.length < 2) return "Too short.";
+      if (s.length > 60) return "Too long.";
+      if (INJECTION.test(v)) return "Invalid characters.";
+      if (!/^[\p{L}\p{M}'’.\- ]+$/u.test(s)) return "Only letters, spaces, hyphens, apostrophes.";
+      return "";
+    }
+    function validPhone(raw) {
+      const v = clean(raw, false);
+      if (!v) return "";
+      if (INJECTION.test(raw)) return "Invalid characters.";
+      const digits = v.replace(/\D/g, "");
+      if (digits.length < 10 || digits.length > 15) return "Enter full phone number with area code.";
+      if (!/^[0-9+()\-.\s]+$/.test(v)) return "Only digits and + ( ) - .";
+      return "";
+    }
+    function validMessage(raw) {
+      const v = clean(raw, true);
+      if (!v) return "Tell us about the project.";
+      if (v.length < 15) return "Add more detail (min 15 chars).";
+      if (v.length > 2000) return "Keep under 2000 characters.";
+      const links = (v.match(/https?:\/\//gi) || []).length;
+      if (links > 3) return "Too many links - describe in words.";
+      return "";
+    }
+    function validBusiness(raw) {
+      const v = clean(raw, false);
+      if (v.length > 100) return "Too long.";
+      if (INJECTION.test(raw)) return "Invalid characters.";
+      return "";
+    }
+
+    const rules = {
+      firstName: v => validName(v, "First name"),
+      lastName: v => validName(v, "Last name"),
+      email: validEmail,
+      phone: validPhone,
+      business: validBusiness,
+      message: validMessage
+    };
+
+    function showError(name, msg) {
+      const field = document.getElementById(name);
+      const errEl = document.getElementById("err-" + name);
+      if (!field || !errEl) return;
+      if (msg) {
+        field.setAttribute("aria-invalid", "true");
+        errEl.textContent = msg;
+        errEl.classList.add("show");
+      } else {
+        field.removeAttribute("aria-invalid");
+        errEl.textContent = "";
+        errEl.classList.remove("show");
+      }
+    }
+    function checkField(name) {
+      const field = document.getElementById(name);
+      if (!field || !rules[name]) return true;
+      const msg = rules[name](field.value);
+      showError(name, msg);
+      return !msg;
+    }
+    function setStatus(kind, text) {
+      statusEl.className = "form-status show " + kind;
+      statusEl.textContent = text;
+    }
+
+    Object.keys(rules).forEach(name => {
+      const field = document.getElementById(name);
+      if (!field) return;
+      field.addEventListener("blur", () => checkField(name));
+      field.addEventListener("input", () => { if (attempted) checkField(name); });
+    });
+
+    const msgEl = document.getElementById("message");
+    const counter = document.getElementById("charCount");
+    if (msgEl && counter) {
+      msgEl.addEventListener("input", () => { counter.textContent = msgEl.value.length; });
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      attempted = true;
+      statusEl.className = "form-status";
+
+      if (document.getElementById("companyWebsite").value.trim() !== "") {
+        setStatus("ok", "Thanks - your message has been received.");
+        form.reset();
+        return;
+      }
+      if (Date.now() - loadedAt < 2500) {
+        setStatus("bad", "Too fast - please wait a moment.");
+        return;
+      }
+      if (Date.now() - lastSubmitAt < 60000) {
+        const wait = Math.ceil((60000 - (Date.now() - lastSubmitAt)) / 1000);
+        setStatus("bad", "Please wait " + wait + " seconds before sending again.");
+        return;
+      }
+
+      const names = Object.keys(rules);
+      const invalid = names.filter(n => !checkField(n));
+      if (invalid.length) {
+        const first = document.getElementById(invalid[0]);
+        if (first) first.focus();
+        setStatus("bad", invalid.length + " field(s) need fixing.");
+        return;
+      }
+
+      const payload = {
+        firstName: clean(document.getElementById("firstName").value, false),
+        lastName: clean(document.getElementById("lastName").value, false),
+        email: document.getElementById("email").value.trim(),
+        phone: clean(document.getElementById("phone").value, false) || "Not provided",
+        tier: document.getElementById("tier").value,
+        care: document.getElementById("care").value,
+        business: clean(document.getElementById("business").value, false) || "Not provided",
+        message: clean(document.getElementById("message").value, true)
+      };
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Sending…";
+
+      try {
+        if (FORM_ENDPOINT) {
+          const body = {
+            subject: "New project enquiry - " + payload.firstName + " " + payload.lastName,
+            from_name: payload.firstName + " " + payload.lastName,
+            replyto: payload.email,
+            _replyto: payload.email,
+            ...payload
+          };
+          if (WEB3FORMS_KEY) body.access_key = WEB3FORMS_KEY;
+
+          const res = await fetch(FORM_ENDPOINT, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Accept": "application/json" },
+            body: JSON.stringify(body)
+          });
+          if (!res.ok) throw new Error("Request failed");
+          setStatus("ok", "Message sent. Asuaka will reply to " + payload.email + " within a few hours.");
+          form.reset();
+          document.getElementById("charCount").textContent = "0";
+          lastSubmitAt = Date.now();
+        } else {
+          const lines = [
+            "Name: " + payload.firstName + " " + payload.lastName,
+            "Email: " + payload.email,
+            "Phone: " + payload.phone,
+            "Tier: " + payload.tier,
+            "Care plan: " + payload.care,
+            "Business type: " + payload.business,
+            "",
+            "Project details:",
+            payload.message
+          ].join("\n");
+          window.location.href = "mailto:" + OWNER_EMAIL +
+            "?subject=" + encodeURIComponent("Website enquiry - " + payload.firstName + " " + payload.lastName) +
+            "&body=" + encodeURIComponent(lines);
+          setStatus("ok", "Your email app is opening - press send to finish.");
+          lastSubmitAt = Date.now();
+        }
+      } catch (err) {
+        setStatus("bad", "Could not send. Email hammondwebsites@gmail.com or text (812) 498-7657.");
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Send message";
+      }
+    });
+  })();
+</script>
+</body>
+</html>
