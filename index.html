@@ -123,6 +123,26 @@
   }
   .home-buttons{ display:flex; gap:1rem; flex-wrap:wrap; justify-content:center; }
 
+  .home-quote{
+    margin-top:2.75rem;
+    max-width:38ch;
+    font-family:"Space Grotesk", sans-serif;
+    font-weight:500;
+    font-size:clamp(0.95rem, 1.6vw, 1.15rem);
+    line-height:1.55;
+    color:rgba(255,255,255,0.88);
+    border-top:1px solid var(--border);
+    padding-top:1.4rem;
+  }
+  .home-quote small{
+    display:block;
+    margin-top:0.6rem;
+    font-size:0.72rem;
+    font-weight:400;
+    letter-spacing:0.04em;
+    color:var(--muted);
+  }
+
   /* ==================================================
      SHARED BUTTON STYLE (Home + Services CTA)
      ================================================== */
@@ -226,7 +246,6 @@
   }
   .pan-wrap{ width:100vw; overflow:hidden; }
   .pan-track{ display:flex; gap:2rem; width:max-content; animation:pan-scroll 46s linear infinite; will-change:transform; }
-  .pan-wrap:hover .pan-track{ animation-play-state:paused; }
   @keyframes pan-scroll{ from{ transform:translate3d(0,0,0); } to{ transform:translate3d(-50%,0,0); } }
   .pan-item{ flex:0 0 auto; width:min(78vw,760px); position:relative; cursor:default; }
   .preview-frame{ position:relative; border:1px solid rgba(255,255,255,0.12); overflow:hidden; transition:border-color .25s ease; }
@@ -346,11 +365,15 @@
 <div class="page active" id="page-home">
   <div class="home-inner">
     <h1>Websites That Work</h1>
-    <p class="subtitle">Starting at $50</p>
+    <p class="subtitle">Starting at $250</p>
     <div class="home-buttons">
       <a href="#" class="btn btn-primary" onclick="switchPage('services'); return false;">See Pricing</a>
       <a href="#" class="btn btn-secondary" onclick="switchPage('portfolio'); return false;">View Our Work</a>
     </div>
+    <p class="home-quote">
+      84% of people searched for a local business in the last three months. Make sure they find something.
+      <small>BrightLocal Consumer Search Behavior, 2026</small>
+    </p>
   </div>
 </div>
 
@@ -367,8 +390,8 @@
     <div class="pricing-grid">
 
       <div class="tier-card">
-        <div class="tier-name">Starter</div>
-        <div class="tier-price">$50</div>
+        <div class="tier-name">Professional</div>
+        <div class="tier-price">$250</div>
         <div class="tier-price-note">one-time payment</div>
         <ul class="tier-features">
           <li>Up to 5 pages designed for your business</li>
@@ -377,18 +400,18 @@
           <li>Built to show up in Google searches</li>
           <li>Google Maps on your site so customers can find you</li>
           <li>We help you get your site live and online</li>
-          <li>Ready in 2–3 business days</li>
+          <li>Ready in 1–2 weeks</li>
           <li>1 round of changes after you review it</li>
         </ul>
-        <a href="#" class="tier-cta" onclick="switchPage('contact', 'Starter — $50'); return false;">Get Started</a>
+        <a href="#" class="tier-cta" onclick="switchPage('contact', 'Professional — $250'); return false;">Get Started</a>
       </div>
 
       <div class="tier-card">
-        <div class="tier-name">Professional</div>
-        <div class="tier-price">$500</div>
+        <div class="tier-name">Financial Systems and Databases</div>
+        <div class="tier-price">$1,000</div>
         <div class="tier-price-note">one-time payment</div>
         <ul class="tier-features">
-          <li class="includes">Everything in Starter, plus:</li>
+          <li class="includes">Everything in Financial Systems and Databases, plus:</li>
           <li>Custom database design &amp; integration</li>
           <li>User registration &amp; login</li>
           <li>Payments via Stripe or PayPal</li>
@@ -396,18 +419,18 @@
           <li>Booking / reservation system</li>
           <li>Admin dashboard for orders and users</li>
           <li>Email notification system</li>
-          <li>Delivered in 1–2 weeks</li>
+          <li>Delivered in 2–4 weeks</li>
           <li>3 rounds of revisions</li>
         </ul>
-        <a href="#" class="tier-cta" onclick="switchPage('contact', 'Professional — $500'); return false;">Get Started</a>
+        <a href="#" class="tier-cta" onclick="switchPage('contact', 'Financial Systems and Databases — $1,000'); return false;">Get Started</a>
       </div>
 
       <div class="tier-card">
         <div class="tier-name">AI Agents &amp; Virtual Assistants</div>
-        <div class="tier-price">$2,000</div>
+        <div class="tier-price">$4,000</div>
         <div class="tier-price-note">one-time payment</div>
         <ul class="tier-features">
-          <li class="includes">Everything in Professional, plus:</li>
+          <li class="includes">Everything in Financial Systems and Databases, plus:</li>
           <li>Custom AI chatbot trained on your business</li>
           <li>Virtual assistant for customer support</li>
           <li>AI product or content recommendations</li>
@@ -416,10 +439,10 @@
           <li>OpenAI / custom model integration</li>
           <li>API connections to third-party tools</li>
           <li>Full documentation &amp; training</li>
-          <li>Delivered in 2–4 weeks</li>
+          <li>Delivered in 4–8 weeks</li>
           <li>Unlimited revisions during the build</li>
         </ul>
-        <a href="#" class="tier-cta" onclick="switchPage('contact', 'AI Agents &amp; Virtual Assistants — $2,000'); return false;">Get Started</a>
+        <a href="#" class="tier-cta" onclick="switchPage('contact', 'AI Agents &amp; Virtual Assistants — $4,000'); return false;">Get Started</a>
       </div>
 
     </div>
@@ -435,7 +458,7 @@
 
       <div class="sub-card">
         <div class="sub-name">Care</div>
-        <div class="sub-pairing">For Starter websites</div>
+        <div class="sub-pairing">For Professional websites</div>
         <div class="sub-price">$15<span> /mo</span></div>
         <ul class="sub-features">
           <li>Website hosting — we handle the technical stuff</li>
@@ -446,7 +469,7 @@
 
       <div class="sub-card">
         <div class="sub-name">Care+</div>
-        <div class="sub-pairing">For Professional websites</div>
+        <div class="sub-pairing">For Financial Systems and Databases websites</div>
         <div class="sub-price">$50<span> /mo</span></div>
         <ul class="sub-features">
           <li class="includes">Everything in Care, plus:</li>
@@ -458,7 +481,7 @@
 
       <div class="sub-card">
         <div class="sub-name">Managed</div>
-        <div class="sub-pairing">For AI &amp; Automation websites</div>
+        <div class="sub-pairing">For AI Agents &amp; Virtual Assistants websites</div>
         <div class="sub-price">$200<span> /mo</span></div>
         <ul class="sub-features">
           <li class="includes">Everything in Care+, plus:</li>
@@ -668,9 +691,9 @@
             <label for="tier">Which tier are you after?</label>
             <select id="tier" name="tier">
               <option value="Not sure yet">Not sure yet — help me decide</option>
-              <option value="Starter — $50">Starter — basic website, $50</option>
-              <option value="Professional — $500">Professional — database &amp; payments, $500</option>
-              <option value="AI Agents &amp; Virtual Assistants — $2,000">AI Agents &amp; Virtual Assistants — $2,000</option>
+              <option value="Professional — $250">Professional — basic website, $250</option>
+              <option value="Financial Systems and Databases — $1,000">Financial Systems and Databases — $1,000</option>
+              <option value="AI Agents &amp; Virtual Assistants — $4,000">AI Agents &amp; Virtual Assistants — $4,000</option>
             </select>
             <p class="err" id="err-tier"></p>
           </div>
